@@ -18,8 +18,9 @@ def check_spam(submission: dict) -> dict:
             }
         
         contents = system_instruction + "\n\n" + json.dumps(submission)
+
         response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
+            model="gemini-2.5-flash",
             contents=contents,
             config={"response_mime_type": "text/plain"}  
         )

@@ -14,7 +14,7 @@ async def check_spam_endpoint(request: Request):
             content={"code": 400, "message": "invalid json format"},
             status_code=400
         )
-    
+        
     result = check_spam(submission)
     return JSONResponse(content=result, status_code=result["code"])
 
