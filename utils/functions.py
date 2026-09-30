@@ -1,10 +1,14 @@
 import json
 from utils.variables import system_instruction
 from utils.gemini import client
+import asyncio
+import os
 
-def check_spam(submission: dict) -> dict:
+
+async def check_spam(submission: dict) -> dict:
     """Main function to check spam"""
     try:
+        print("Checking spam...")
         if not isinstance(submission, dict):
             return {
                 "code": 400,
@@ -19,12 +23,16 @@ def check_spam(submission: dict) -> dict:
         
         contents = system_instruction + "\n\n" + json.dumps(submission)
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
+        response = await asyncio.to_thread(
+            client.models.generate_content,
+            model="gemini-3.1-flash-lite",
             contents=contents,
             config={"response_mime_type": "text/plain"}  
         )
         
+        print("Model response:")
+        print(response)
+    
         decision = response.text.strip().lower()
         
         if decision not in ["ok", "spam"]:
@@ -39,6 +47,10 @@ def check_spam(submission: dict) -> dict:
         }
         
     except Exception as error:
+        
+        import traceback
+        traceback.print_exc()
+        
         return {
             "code": 500,
             "message": "Model unavailable"
